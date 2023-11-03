@@ -1,6 +1,8 @@
 package com.example.moviesapp;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private MainViewModel mainViewModel;
 	private RecyclerView recyclerViewMovies;
+	private ProgressBar pbLoading;
 	private MoviesAdapter moviesAdapter;
 
 	@Override
@@ -21,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		recyclerViewMovies = findViewById(R.id.rvMovies);
+		initViews();
+
 		moviesAdapter = new MoviesAdapter();
 		recyclerViewMovies.setAdapter(moviesAdapter);
 		recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
@@ -30,6 +34,20 @@ public class MainActivity extends AppCompatActivity {
 		mainViewModel.getMoviesLiveData().observe(
 				this,
 				movies -> moviesAdapter.setMovies(movies));
-		mainViewModel.loadMovies();
+		mainViewModel.getIsLoading().observe(
+				this,
+				isLoading -> {
+					if (isLoading) {
+						pbLoading.setVisibility(View.VISIBLE);
+					} else {
+						pbLoading.setVisibility(View.GONE);
+					}
+				});
+		moviesAdapter.setOnReachEndListener(() -> mainViewModel.loadMovies());
+	}
+
+	private void initViews() {
+		recyclerViewMovies = findViewById(R.id.rvMovies);
+		pbLoading = findViewById(R.id.pbLoading);
 	}
 }
