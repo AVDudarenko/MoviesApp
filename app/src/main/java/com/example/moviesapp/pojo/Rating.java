@@ -1,26 +1,29 @@
 package com.example.moviesapp.pojo;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Rating {
 	@SerializedName("kp")
-	private String kp;
+	private final double kp;
 	@SerializedName("imdb")
-	private String imdb;
+	private final double imdb;
 
-	public Rating(String ratingKp, String ratingImdb) {
+	public Rating(double ratingKp, double ratingImdb) {
 		this.kp = ratingKp;
 		this.imdb = ratingImdb;
 	}
 
-	public String getKp() {
+	public double getKp() {
 		return kp;
 	}
 
-	public String getImdb() {
+	public double getImdb() {
 		return imdb;
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
 		return "Rating{" +
