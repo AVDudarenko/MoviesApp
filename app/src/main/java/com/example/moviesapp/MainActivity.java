@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 		mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 		mainViewModel.getMoviesLiveData().observe(
 				this,
-				movies -> Log.d("MAinACtivity", movies.toString())
+				movies -> Log.d("MainActivity", movies.toString())
 		);
 		mainViewModel.loadMovies();
 	}
