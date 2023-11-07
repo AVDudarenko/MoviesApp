@@ -21,85 +21,100 @@ import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
-	private List<Movie> movies = new ArrayList<>();
-	private OnReachEndListener onReachEndListener;
+    private List<Movie> movies = new ArrayList<>();
+    private OnReachEndListener onReachEndListener;
+    private OnMovieClickListener onMovieClickListener;
 
-	public void setOnReachEndListener(OnReachEndListener onReachEndListener) {
-		this.onReachEndListener = onReachEndListener;
-	}
+    public void setOnMovieClickListener(OnMovieClickListener onMovieClickListener) {
+        this.onMovieClickListener = onMovieClickListener;
+    }
 
-	public void setMovies(List<Movie> movies) {
-		this.movies = movies;
-		notifyDataSetChanged();
-	}
+    public void setOnReachEndListener(OnReachEndListener onReachEndListener) {
+        this.onReachEndListener = onReachEndListener;
+    }
 
-	@NonNull
-	@Override
-	public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View view = LayoutInflater.from(parent.getContext()).inflate(
-				R.layout.movie_item,
-				parent,
-				false
-		);
-		return new MovieViewHolder(view);
-	}
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
+        notifyDataSetChanged();
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-		Movie movie = movies.get(position);
-		Glide.with(holder.itemView)
-				.load(movie.getPoster().getUrl())
-				.into(holder.ivPoster);
+    @NonNull
+    @Override
+    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.movie_item,
+                parent,
+                false
+        );
+        return new MovieViewHolder(view);
+    }
 
-		double ratingKp = movie.getRating().getKp();
-		double ratingImdb = movie.getRating().getImdb();
+    @Override
+    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
+        Movie movie = movies.get(position);
+        Glide.with(holder.itemView)
+                .load(movie.getPoster().getUrl())
+                .into(holder.ivPoster);
 
-		Context context = holder.itemView.getContext();
+        double ratingKp = movie.getRating().getKp();
+        double ratingImdb = movie.getRating().getImdb();
 
-		holder.tvRatingKp.setBackground(chooseBackground(context, ratingKp));
-		holder.tvRatingImdb.setBackground(chooseBackground(context, ratingImdb));
+        Context context = holder.itemView.getContext();
 
-		holder.tvRatingKp.setText(String.valueOf(ratingKp).substring(0, 3));
-		holder.tvRatingImdb.setText(String.valueOf(ratingImdb).substring(0, 3));
+        holder.tvRatingKp.setBackground(chooseBackground(context, ratingKp));
+        holder.tvRatingImdb.setBackground(chooseBackground(context, ratingImdb));
 
-		if (position == movies.size() - 5 && onReachEndListener != null) {
-			onReachEndListener.onReachEnd();
-		}
-	}
+        holder.tvRatingKp.setText(String.valueOf(ratingKp).substring(0, 3));
+        holder.tvRatingImdb.setText(String.valueOf(ratingImdb).substring(0, 3));
 
-	@Override
-	public int getItemCount() {
-		return movies.size();
-	}
+        if (position == movies.size() - 5 && onReachEndListener != null) {
+            onReachEndListener.onReachEnd();
+        }
 
-	static class MovieViewHolder extends RecyclerView.ViewHolder {
+        holder.itemView.setOnClickListener(view -> {
+            if (onMovieClickListener != null) {
+                onMovieClickListener.onMovieClick(movie);
+            }
+        });
+    }
 
-		private final ImageView ivPoster;
-		private final TextView tvRatingKp;
-		private final TextView tvRatingImdb;
+    @Override
+    public int getItemCount() {
+        return movies.size();
+    }
 
-		public MovieViewHolder(@NonNull View itemView) {
-			super(itemView);
-			ivPoster = itemView.findViewById(R.id.ivPoster);
-			tvRatingKp = itemView.findViewById(R.id.tvRatingKp);
-			tvRatingImdb = itemView.findViewById(R.id.tvRatingImdb);
-		}
-	}
+    static class MovieViewHolder extends RecyclerView.ViewHolder {
 
-	private Drawable chooseBackground(Context context, double rating) {
-		int backgroundId;
-		if (rating > 7) {
-			backgroundId = R.drawable.circle_green;
-		} else if (rating > 5) {
-			backgroundId = R.drawable.circle_orange;
-		} else {
-			backgroundId = R.drawable.circle_red;
-		}
+        private final ImageView ivPoster;
+        private final TextView tvRatingKp;
+        private final TextView tvRatingImdb;
 
-		return ContextCompat.getDrawable(context, backgroundId);
-	}
+        public MovieViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ivPoster = itemView.findViewById(R.id.ivPoster);
+            tvRatingKp = itemView.findViewById(R.id.tvRatingKp);
+            tvRatingImdb = itemView.findViewById(R.id.tvRatingImdb);
+        }
+    }
 
-	public interface OnReachEndListener {
-		void onReachEnd();
-	}
+    private Drawable chooseBackground(Context context, double rating) {
+        int backgroundId;
+        if (rating > 7) {
+            backgroundId = R.drawable.circle_green;
+        } else if (rating > 5) {
+            backgroundId = R.drawable.circle_orange;
+        } else {
+            backgroundId = R.drawable.circle_red;
+        }
+
+        return ContextCompat.getDrawable(context, backgroundId);
+    }
+
+    public interface OnReachEndListener {
+        void onReachEnd();
+    }
+
+    public interface OnMovieClickListener {
+        void onMovieClick(Movie movie);
+    }
 }
