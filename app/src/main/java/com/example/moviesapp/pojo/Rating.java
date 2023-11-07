@@ -4,31 +4,33 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Rating {
-	@SerializedName("kp")
-	private final double kp;
-	@SerializedName("imdb")
-	private final double imdb;
+import java.io.Serializable;
 
-	public Rating(double ratingKp, double ratingImdb) {
-		this.kp = ratingKp;
-		this.imdb = ratingImdb;
-	}
+public class Rating implements Serializable {
+    @SerializedName("kp")
+    private final double kp;
+    @SerializedName("imdb")
+    private final double imdb;
 
-	public double getKp() {
-		return kp;
-	}
+    public Rating(double ratingKp, double ratingImdb) {
+        this.kp = ratingKp;
+        this.imdb = ratingImdb;
+    }
 
-	public double getImdb() {
-		return imdb;
-	}
+    public double getKp() {
+        return kp;
+    }
 
-	@NonNull
-	@Override
-	public String toString() {
-		return "Rating{" +
-				"kp='" + kp + '\'' +
-				", imdb='" + imdb + '\'' +
-				'}';
-	}
+    public double getImdb() {
+        return imdb;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Rating{" +
+                "kp='" + kp + '\'' +
+                ", imdb='" + imdb + '\'' +
+                '}';
+    }
 }

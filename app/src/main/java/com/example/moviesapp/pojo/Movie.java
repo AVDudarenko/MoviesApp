@@ -2,17 +2,19 @@ package com.example.moviesapp.pojo;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Movie {
+import java.io.Serializable;
 
-	@SerializedName("id")
-	private int id;
-	@SerializedName("name")
-	private String name;
-	@SerializedName("description")
-	private String description;
-	@SerializedName("year")
-	private int year;
-	@SerializedName("poster")
+public class Movie implements Serializable {
+
+    @SerializedName("id")
+    private int id;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("description")
+    private String description;
+    @SerializedName("year")
+    private int year;
+    @SerializedName("poster")
 	private Poster poster;
 	@SerializedName("rating")
 	private Rating rating;
