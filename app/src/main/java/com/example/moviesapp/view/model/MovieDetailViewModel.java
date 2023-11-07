@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.moviesapp.ApiFactory;
+import com.example.moviesapp.pojo.Review;
+import com.example.moviesapp.pojo.ReviewResponse;
 import com.example.moviesapp.pojo.Trailer;
 
 import java.util.List;
@@ -19,39 +21,55 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MovieDetailViewModel extends AndroidViewModel {
-    private static final String TAG = "MovieDetailViewModel";
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private final MutableLiveData<List<Trailer>> trailersMutableLiveData = new MutableLiveData<>();
+	private static final String TAG = "MovieDetailViewModel";
+	private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+	private final MutableLiveData<List<Trailer>> trailersMutableLiveData = new MutableLiveData<>();
+	private final MutableLiveData<List<Review>> reviewsMutableLiveData = new MutableLiveData<>();
 
-    public LiveData<List<Trailer>> getTrailersMutableLiveData() {
-        return trailersMutableLiveData;
-    }
+	public LiveData<List<Trailer>> getTrailersMutableLiveData() {
+		return trailersMutableLiveData;
+	}
 
-    /**
-     * method for load trailers
-     *
-     * @param id - contains film id
-     */
-    public void loadTrailers(int id) {
-        Disposable disposable = ApiFactory.apiService.loadTrailers(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(trailerResponse -> trailerResponse.getTrailersList().getTrailers())
-                .subscribe(
-                        trailersMutableLiveData::setValue,
-                        throwable -> Log.d(TAG, throwable.toString())
-                );
+	public LiveData<List<Review>> getReviewsMutableLiveData() {
+		return reviewsMutableLiveData;
+	}
 
-        compositeDisposable.add(disposable);
-    }
+	/**
+	 * method for load trailers
+	 *
+	 * @param id - contains film id
+	 */
+	public void loadTrailers(int id) {
+		Disposable disposable = ApiFactory.apiService.loadTrailers(id)
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.map(trailerResponse -> trailerResponse.getTrailersList().getTrailers())
+				.subscribe(
+						trailersMutableLiveData::setValue,
+						throwable -> Log.d(TAG, throwable.toString())
+				);
+		compositeDisposable.add(disposable);
+	}
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        compositeDisposable.dispose();
-    }
+	public void loadReviews(int id) {
+		Disposable disposable = ApiFactory.apiService.loadReview(id)
+				.subscribeOn(Schedulers.io())
+				.observeOn(AndroidSchedulers.mainThread())
+				.map(ReviewResponse::getReviewList)
+				.subscribe(
+						reviewsMutableLiveData::postValue,
+						throwable -> Log.d(TAG, throwable.toString())
+				);
+		compositeDisposable.add(disposable);
+	}
 
-    public MovieDetailViewModel(@NonNull Application application) {
-        super(application);
-    }
+	@Override
+	protected void onCleared() {
+		super.onCleared();
+		compositeDisposable.dispose();
+	}
+
+	public MovieDetailViewModel(@NonNull Application application) {
+		super(application);
+	}
 }
