@@ -2,29 +2,24 @@ package com.example.moviesapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.moviesapp.ApiFactory;
 import com.example.moviesapp.R;
 import com.example.moviesapp.adapter.ReviewsAdapter;
 import com.example.moviesapp.adapter.TrailerAdapter;
 import com.example.moviesapp.pojo.Movie;
-import com.example.moviesapp.pojo.ReviewResponse;
 import com.example.moviesapp.view.model.MovieDetailViewModel;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MovieDetailActivity extends AppCompatActivity {
 	private ImageView ivPoster;
@@ -35,6 +30,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 	private RecyclerView rvReviews;
 	private TrailerAdapter trailerAdapter;
 	private ReviewsAdapter reviewsAdapter;
+	private ImageView ivFavorite;
 
 	private static final String EXTRA_MOVIE = "movie";
 	private static final String TAG = "MovieDetailActivity";
@@ -78,6 +74,24 @@ public class MovieDetailActivity extends AppCompatActivity {
 				reviewsList -> reviewsAdapter.setReviews(reviewsList)
 		);
 
+		Drawable starOff = ContextCompat.getDrawable(
+				MovieDetailActivity.this,
+				android.R.drawable.star_big_off
+		);
+		Drawable starOn = ContextCompat.getDrawable(
+				MovieDetailActivity.this,
+				android.R.drawable.star_big_on
+		);
+
+		movieDetailViewModel.getFavoriteMovie(movie.getId()).observe(this, movieFromDb -> {
+			if (movieFromDb == null) {
+				ivFavorite.setImageDrawable(starOff);
+				ivFavorite.setOnClickListener(view -> movieDetailViewModel.addMovie(movie));
+			} else {
+				ivFavorite.setImageDrawable(starOn);
+				ivFavorite.setOnClickListener(view -> movieDetailViewModel.deleteMovie(movie.getId()));
+			}
+		});
 	}
 
 	private void initViews() {
@@ -87,6 +101,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 		tvDescription = findViewById(R.id.tvDescription);
 		rvTrailers = findViewById(R.id.rvTrailers);
 		rvReviews = findViewById(R.id.rvReviews);
+		ivFavorite = findViewById(R.id.ivFavorite);
 	}
 
 	public static Intent newIntent(Context context, Movie movie) {
